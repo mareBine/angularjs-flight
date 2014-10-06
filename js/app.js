@@ -2,10 +2,6 @@
  * Created by mare on 4.10.2014.
  */
 
-function isNumber(n) {
-    return !isNaN(parseFloat(n)) && isFinite(n);
-}
-
 var app = angular.module('main', ['ngTable', 'ngResource']);
 
 /**
@@ -29,15 +25,74 @@ app.directive('loadingContainer', function () {
 /**
  * controller
  */
-app.controller('AppCtrl', function ($scope, $timeout, $resource, ngTableParams, $log, $filter) {
-    var Api = $resource('api/allsamples/DE');
+app.controller('AppCtrl', function ($scope, $timeout, $resource, ngTableParams, $log, $http, $q) {
 
-    // osnovni parametri za init
+    var Api = $resource('api/allsamples');
+
+    // dobi ven vse države
+    /*
+     $http.post('api/countries').success(function (data) {
+     //console.log(data);
+     $scope.countries = data;
+     });
+     */
+
+
+    /**
+     * za napolnit filter za države
+     *
+     * @param column
+     * @returns {Deferred}
+     *
+     * TODO: da jih pobere iz baze?
+     */
+    $scope.names = function (column) {
+
+        var def = $q.defer();
+        var names = [
+            {"id": "AT", "title": "AT"},
+            {"id": "BE", "title": "BE"},
+            {"id": "CH", "title": "CH"},
+            {"id": "CY", "title": "CY"},
+            {"id": "CZ", "title": "CZ"},
+            {"id": "DE", "title": "DE"},
+            {"id": "DK", "title": "DK"},
+            {"id": "EE", "title": "EE"},
+            {"id": "ES", "title": "ES"},
+            {"id": "FI", "title": "FI"},
+            {"id": "FR", "title": "FR"},
+            {"id": "GR", "title": "GR"},
+            {"id": "HR", "title": "HR"},
+            {"id": "HU", "title": "HU"},
+            {"id": "IT", "title": "IT"},
+            {"id": "LT", "title": "LT"},
+            {"id": "LU", "title": "LU"},
+            {"id": "LV", "title": "LV"},
+            {"id": "MT", "title": "MT"},
+            {"id": "NL", "title": "NL"},
+            {"id": "PT", "title": "PT"},
+            {"id": "SE", "title": "SE"},
+            {"id": "SI", "title": "SI"},
+            {"id": "SK", "title": "SK"}
+        ];
+
+        //$log.log("names: ", names);
+
+        def.resolve(names);
+        return def;
+    };
+
+    /*
+     * osnovni parametri za init tabele + f. za dobit podatke ob spremembi
+     */
     $scope.tableParams = new ngTableParams({
         page: 1,            // show first page
         count: 10,          // count per page
         sorting: {
             BWID: 'asc'     // initial sorting
+        },
+        filter: {
+            cc: 'AT'
         }
     }, {
         total: 0,           // length of data
@@ -47,7 +102,7 @@ app.controller('AppCtrl', function ($scope, $timeout, $resource, ngTableParams, 
             Api.save(params.url(), function (data) {
                 //$timeout(function () {
                 // update table params
-                $log.log(data);
+                //$log.log(data);
                 params.total(data.total);
                 // set new data
                 $defer.resolve(data.data);

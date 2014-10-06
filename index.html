@@ -8,6 +8,8 @@
 <!--[if gt IE 8]><!-->
 <html class="no-js"> <!--<![endif]-->
 <head>
+    <title>BWD Assessment samples</title>
+
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width">
@@ -26,37 +28,27 @@
     <link rel="stylesheet" href="css/css.css">
 
 </head>
-<body ng-app="main">
 
-<h1>AJAX Data Loading</h1>
+<body ng-app="main" ng-controller="AppCtrl">
 
-<div ng-controller="AppCtrl">
+<h3>BWD 2013: assessment samples</h3>
 
-    <button ng-click="tableParams.reload()" class="btn pull-right">Reload</button>
-    <button ng-click="tableParams.sorting({})" class="btn pull-right">Clear sorting</button>
+<div id="tablediv">
+
+    <!--<button ng-click="tableParams.reload()" class="btn pull-right">Reload</button>-->
+    <!--<button ng-click="tableParams.sorting({})" class="btn pull-right">Clear sorting</button>-->
     <div class="clearfix"></div>
 
     <div loading-container="tableParams.settings().$loading">
-        <table ng-table="tableParams" show-filter="true" class="table">
+        <table ng-table="tableParams" show-filter="true" class="table table-bordered table-striped">
             <tr ng-repeat="bwd in $data">
-                <td data-title="'cc'" sortable="'cc'">
-                    {{bwd.cc}}
-                </td>
-                <td data-title="'BWID'" filter="{ 'BWID': 'text' }" sortable="'BWID'">
-                    {{bwd.BWID}}
-                </td>
-                <td data-title="'SampleDate'" sortable="'SampleDate'">
-                    {{bwd.SampleDate}}
-                </td>
-                <td data-title="'ConcIE'" sortable="'ConcIE'">
-                    {{bwd.ConcIE}}
-                </td>
-                <td data-title="'ConcEC'" sortable="'ConcEC'">
-                    {{bwd.ConcEC}}
-                </td>
-                <td data-title="'Excluded reason'" sortable="'excluded_reason'">
-                    {{bwd.excluded_reason}}
-                </td>
+                <td data-title="'cc'" filter="{ 'cc': 'select' }" filter-data="names($column)" sortable="'cc'">{{bwd.cc}}</td>
+                <td data-title="'BWID'" sortable="'BWID'">{{bwd.BWID}}</td>
+                <td data-title="'BWName'" filter="{ 'BWName': 'text' }" sortable="'BWName'">{{bwd.BWName}}</td>
+                <td data-title="'SampleDate'" sortable="'SampleDate'">{{bwd.SampleDate}}</td>
+                <td data-title="'ConcIE'" sortable="'ConcIE'">{{bwd.ConcIE}}</td>
+                <td data-title="'ConcEC'" sortable="'ConcEC'">{{bwd.ConcEC}}</td>
+                <td data-title="'Excluded reason'" sortable="'excluded_reason'">{{bwd.excluded_reason}}</td>
             </tr>
         </table>
     </div>

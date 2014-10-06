@@ -19,26 +19,6 @@ function get_string_between($string, $start, $end)
     return substr($string, $ini, $len);
 }
 
-/**
- * Class routes
- *
- * lahko definiraš classe za route in potem kličeš na način Flight::route('GET /', array('routes', 'get'));
- */
-
-class routes
-{
-    public static function get()
-    {
-        echo 'received GET request.';
-    }
-
-    public static function post()
-    {
-        echo 'received POST request.';
-    }
-}
-
-
 /*
  * DB (prek PDO)
  */
@@ -46,79 +26,18 @@ Flight::register('db', 'PDO', array('mysql:host=' . $host . ';port=' . $port . '
 
 $db = Flight::db();
 $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-/*
- * ROUTE
- */
-Flight::route('/test', function ($route) {
-    echo 'test.';
-
-    var_dump($route->methods);
-    var_dump($route->params);
-    var_dump($route->regex);
-    var_dump($route->splat);
-
-}, true);
-
-Flight::route('GET /', array('routes', 'get'));
-
-Flight::route('POST /', array('routes', 'post'));
-
-/**
- * na ta način pošiljaš vhodne podatke preko parametra /report/id
- */
-Flight::route($method . ' /report/@id', function ($id) {
-
-        $db = Flight::db();
-
-        try {
-
-            $stmt = $db->prepare('SELECT * FROM pivottest WHERE Report > :id');
-            $stmt->execute(array('id' => $id));
-
-            echo(Flight::json($stmt->fetchAll(PDO::FETCH_OBJ)));
-
-        } catch (PDOException $e) {
-            echo '<pre>' . $e->getTraceAsString();
-            echo '<br>Error: ' . $e->getMessage();
-        }
-
-    });
-
-/**
- * na ta način pošiljaš vhodne podatke preko application/json kot json
- */
-Flight::route($method . ' /report', function () {
-
-        // dobi id preko jsona {"id": "12"}
-        $id = Flight::request()->data->id;
-
-        $db = Flight::db();
-
-        try {
-
-            $stmt = $db->prepare('SELECT * FROM pivottest WHERE Report > :id');
-            $stmt->execute(array('id' => $id));
-
-            echo(Flight::json($stmt->fetchAll(PDO::FETCH_OBJ)));
-
-        } catch (PDOException $e) {
-            echo '<pre>' . $e->getTraceAsString();
-            echo '<br>Error: ' . $e->getMessage();
-        }
-
-    });
+$db->exec("SET NAMES utf8");        // to mora bit da pravilno dela UTF8 znaki
 
 
 /**
- * praktični primer:
  * bwd izpis all samples
  */
-Flight::route($method . ' /allsamples/@cc', function ($cc) {
+Flight::route($method . ' /allsamples', function () {
 
         // dobi id preko jsona {"id": "12"}
         //$cc = Flight::request()->data->cc;
-        //print_r( Flight::request()->data );
+        //var_dump( Flight::request()->data );
+        $cc = "";
 
         $orderBy = "";
         $orderDir = "";
@@ -131,8 +50,12 @@ Flight::route($method . ' /allsamples/@cc', function ($cc) {
                 $orderDir = $val;
             }
             if (strpos($key, 'filter') !== false) {
-                $filterBy = get_string_between($key, '[', ']');
-                $filterVal = $val;
+                if(strpos($key, 'cc') !== false) {
+                    $cc = $val;
+                } else {
+                   $filterBy = get_string_between($key, '[', ']');
+                   $filterVal = $val;
+                }
             }
         }
 
@@ -146,11 +69,12 @@ Flight::route($method . ' /allsamples/@cc', function ($cc) {
 
         $db = Flight::db();
 
+
         $tableData = array();
 
         try {
 
-            if ($cc != "") {
+            //if ($cc != "") {
                 $sql_select = "
                     SELECT *
                 ";
@@ -161,10 +85,17 @@ Flight::route($method . ' /allsamples/@cc', function ($cc) {
 
                 $sql = "
                     FROM bwd_newd_all_samples
-                    WHERE cc = :cc
+                    WHERE 1
                 ";
 
+                if($cc != "") {
+                    $sql .= "
+                        AND cc = :cc
+                    ";
+                }
+
                 if($filterBy != '') {
+                    // AND " . $filterBy . " LIKE '%" . $filterVal . "%'
                     $sql .= "
                         AND " . $filterBy . " LIKE :filterval
                     ";
@@ -181,20 +112,22 @@ Flight::route($method . ' /allsamples/@cc', function ($cc) {
                     OFFSET :start
                 ";
 
-            } else {
-                $sql_select = "";
-                $sql_count = "";
-                $sql_limit = "";
-                $sql = "SELECT 0";
-            }
+//            } else {
+//                $sql_select = "";
+//                $sql_count = "";
+//                $sql_limit = "";
+//                $sql = "SELECT 0";
+//            }
 
             $stmt = $db->prepare($sql_select . $sql . $sql_limit);
-            $stmt->bindValue(':cc', $cc, PDO::PARAM_STR);
-            if($filterBy != '')
-                $stmt->bindValue(':filterval', "%".$filterVal."%", PDO::PARAM_STR);
+            if($cc != "")           $stmt->bindValue(':cc', $cc, PDO::PARAM_STR);
+            if($filterBy != "")     $stmt->bindValue(':filterval', "%".$filterVal."%", PDO::PARAM_STR);
             $stmt->bindValue(':start', (int)$start, PDO::PARAM_INT);
             $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
             $stmt->execute();
+
+            // debug
+            //$stmt->debugDumpParams();
 
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -203,9 +136,8 @@ Flight::route($method . ' /allsamples/@cc', function ($cc) {
 
             // dodam še štetje vseh zapisov
             $stmt2 = $db->prepare($sql_count . $sql);
-            $stmt2->bindValue(':cc', $cc, PDO::PARAM_STR);
-            if($filterBy != '')
-                $stmt2->bindValue(':filterval', "%".$filterVal."%", PDO::PARAM_STR);
+            if($cc != "")           $stmt2->bindValue(':cc', $cc, PDO::PARAM_STR);
+            if($filterBy != '')     $stmt2->bindValue(':filterval', '%'.$filterVal.'%');
             $stmt2->execute();
 
             $result = $stmt2->fetch(PDO::FETCH_ASSOC);
@@ -232,7 +164,7 @@ Flight::route($method . ' /countries', function () {
 
         try {
 
-            $sql = "SELECT DISTINCT(cc) FROM bwd_newd_all_samples ";
+            $sql = "SELECT DISTINCT(cc) AS id, cc AS title  FROM bwd_newd_all_samples";
             $stmt = $db->query($sql);
 
             echo(Flight::json($stmt->fetchAll(PDO::FETCH_ASSOC)));
@@ -243,5 +175,7 @@ Flight::route($method . ' /countries', function () {
         }
 
     });
+
+
 Flight::start();
 ?>
