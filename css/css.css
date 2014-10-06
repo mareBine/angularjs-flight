@@ -1,0 +1,61 @@
+/* scrollbar vedno na desni */
+html {
+    overflow-y: scroll;
+}
+
+/* da imajo vrstico rokico na hover */
+.pointer {
+    cursor: pointer;
+}
+
+/* headerji sredinsko poravnani - zato da se loader lepo vidi na levi */
+h1, h2, h3, h4, h5, h6 {
+    margin-left: 37px;
+}
+
+/* sprememba barve za hover z miško */
+.table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
+    background-color: lightgoldenrodyellow;
+}
+
+/*
+.table {
+    -webkit-transition: color 0.6s, background-color 0.3s;
+    -moz-transition: color 0.6s, background-color 0.3s;
+    -ms-transition: color 0.6s, background-color 0.3s;
+    transition: color 0.6s, background-color 0.3s;
+}
+*/
+
+.table-responsive.ng-enter {
+    -webkit-animation: fadeIn 0.5s;
+    -moz-animation: fadeIn 0.5s;
+    -ms-animation: fadeIn 0.5s;
+    animation: fadeIn 0.5s;
+}
+
+.table-responsive.ng-leave {
+    -webkit-animation: fadeOut 0.5s;
+    -moz-animation: fadeOut 0.5s;
+    -ms-animation: fadeOut 0.5s;
+    animation: fadeOut 0.5s;
+}
+
+/* za ng-table */
+.loading-container {
+    position: relative;
+}
+.loading-container .loading:before, .loading-container .loading:after {
+    content: " ";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    min-height: 50px;
+    min-width: 50px;
+}
+.loading-container .loading:before {
+    background-color: white;
+    opacity: 0.5;
+}
