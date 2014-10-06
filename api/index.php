@@ -1,5 +1,6 @@
 <?php
 
+// db config
 $username = 'root';
 $password = 'redhat';
 $host = '127.0.0.1';
@@ -30,13 +31,15 @@ $db->exec("SET NAMES utf8");        // to mora bit da pravilno dela UTF8 znaki
 
 
 /**
- * bwd izpis all samples
+ * bwd: za dobit all samples
  */
 Flight::route($method . ' /allsamples', function () {
 
         // dobi id preko jsona {"id": "12"}
         //$cc = Flight::request()->data->cc;
         //var_dump( Flight::request()->data );
+        $tableData = array();
+
         $cc = "";
 
         $orderBy = "";
@@ -44,6 +47,7 @@ Flight::route($method . ' /allsamples', function () {
         $filterBy = "";
         $filterVal = "";
 
+        // razbije spr. za sortiranje, filtre
         foreach (Flight::request()->data as $key => $val) {
             if (strpos($key, 'sorting') !== false) {
                 $orderBy = get_string_between($key, '[', ']');
@@ -68,9 +72,6 @@ Flight::route($method . ' /allsamples', function () {
         //echo "start: "  . $start . "  limit: " . $limit;
 
         $db = Flight::db();
-
-
-        $tableData = array();
 
         try {
 
@@ -127,7 +128,7 @@ Flight::route($method . ' /allsamples', function () {
             $stmt->execute();
 
             // debug
-            //$stmt->debugDumpParams();
+            $stmt->debugDumpParams();
 
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -160,10 +161,7 @@ Flight::route($method . ' /countries', function () {
 
         $db = Flight::db();
 
-        $tableData = array();
-
         try {
-
             $sql = "SELECT DISTINCT(cc) AS id, cc AS title  FROM bwd_newd_all_samples";
             $stmt = $db->query($sql);
 

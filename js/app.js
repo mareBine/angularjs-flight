@@ -92,7 +92,7 @@ app.controller('AppCtrl', function ($scope, $timeout, $resource, ngTableParams, 
             BWID: 'asc'     // initial sorting
         },
         filter: {
-            cc: 'AT'
+            cc: 'SI'        // initial filter sem dal na AT
         }
     }, {
         total: 0,           // length of data
