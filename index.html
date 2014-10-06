@@ -22,6 +22,7 @@
     <script src="js/angular-resource.min.js"></script>
     <script src="js/angular-mocks.js"></script>
     <script src="vendor/ng-table-master/ng-table.js"></script>
+    <script src="vendor/ng-table-export-master/ng-table-export.js"></script>
     <link rel="stylesheet" href="vendor/ng-table-master/ng-table.css">
     <script src="js/app.js"></script>
 
@@ -31,7 +32,9 @@
 
 <body ng-app="main" ng-controller="AppCtrl">
 
-<h3>BWD 2013: assessment samples</h3>
+<h3>BWD 2013 new directive assessment samples: {{ dataTotal }}</h3>
+
+<a class="btn btn-primary" ng-mousedown="csv.generate()" ng-href="{{ csv.link() }}" download="test.csv">Export to CSV</a>
 
 <div id="tablediv">
 
@@ -40,7 +43,8 @@
     <div class="clearfix"></div>
 
     <div loading-container="tableParams.settings().$loading">
-        <table ng-table="tableParams" show-filter="true" class="table table-bordered table-striped">
+        <table ng-table="tableParams" show-filter="true"
+               class="table table-bordered table-striped" export-csv="csv">
             <tr ng-repeat="bwd in $data">
                 <td data-title="'cc'" filter="{ 'cc': 'select' }" filter-data="names($column)" sortable="'cc'">{{bwd.cc}}</td>
                 <td data-title="'BWID'" sortable="'BWID'">{{bwd.BWID}}</td>

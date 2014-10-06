@@ -2,7 +2,7 @@
  * Created by mare on 4.10.2014.
  */
 
-var app = angular.module('main', ['ngTable', 'ngResource']);
+var app = angular.module('main', ['ngTable', 'ngResource', 'ngTableExport']);
 
 /**
  * direktiva za loading fadeout
@@ -96,6 +96,8 @@ app.controller('AppCtrl', function ($scope, $timeout, $resource, ngTableParams, 
         }
     }, {
         total: 0,           // length of data
+        counts: [10, 20, 100],      // katere so možnosti za št.recordov na stran
+        //groupBy: 'SampleDate',
         getData: function ($defer, params) {
 
             // ajax request to api: get = GET, save = POST
@@ -104,8 +106,11 @@ app.controller('AppCtrl', function ($scope, $timeout, $resource, ngTableParams, 
                 // update table params
                 //$log.log(data);
                 params.total(data.total);
+
                 // set new data
                 $defer.resolve(data.data);
+
+                $scope.dataTotal = data.total;  // da dobim skupno št. podatkov na scope
 
                 //$log.log(data);
                 //}, 500);
