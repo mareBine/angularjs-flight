@@ -8,7 +8,7 @@ html {
     cursor: pointer;
 }
 
-/* headerji */
+/* headerji sredinsko poravnani - zato da se loader lepo vidi na levi */
 h1, h2, h3, h4, h5, h6, .csv-export {
     margin-left: 10px;
 }

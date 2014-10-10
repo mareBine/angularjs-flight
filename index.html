@@ -48,7 +48,7 @@
             <tr ng-repeat="bwd in $data">
                 <td data-title="'cc'" filter="{ 'cc': 'select' }" filter-data="names($column)" sortable="'cc'">{{bwd.cc}}</td>
                 <td data-title="'BWID'" sortable="'BWID'">{{bwd.BWID}}</td>
-                <td data-title="'BWName'" filter="{ 'BWName': 'text' }" sortable="'BWName'">{{bwd.BWName}}</td>
+                <td data-title="'BWName'" filter="{ 'BWName': 'text' }" sortable="'BWName'" ng-click="clickFilterBWName('BWName', bwd.BWName)">{{bwd.BWName}}</td>
                 <td data-title="'SampleDate'" sortable="'SampleDate'">{{bwd.SampleDate}}</td>
                 <td data-title="'ConcIE'" sortable="'ConcIE'">{{bwd.ConcIE}}</td>
                 <td data-title="'ConcEC'" sortable="'ConcEC'">{{bwd.ConcEC}}</td>

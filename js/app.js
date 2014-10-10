@@ -117,4 +117,15 @@ app.controller('AppCtrl', function ($scope, $timeout, $resource, ngTableParams, 
             });
         }
     });
+
+
+    $scope.clickFilterBWName = function(filterName, filterValue) {
+        $log.log($scope.tableParams.$params);
+        $log.log(filterName, "=", filterValue);
+
+        $scope.tableParams.$params.filter = {
+            'BWName': filterValue
+        };
+    }
+
 });
